@@ -78,6 +78,38 @@ Además de diseñar cada componente, se implementó un sistema de automatizació
 
 El objetivo de esta sección es demostrar la capacidad de orquestar un proceso analítico completo de manera programática.
 
+# Organización del repositorio
+
+```
+Entrega3-DS/
+│
+├── api/
+│   └── lambda_function_expose.py        # Lambda encargada de exponer los datos procesados vía Function URL
+│
+├── athena/
+│   └── query.sql                        # Consultas SQL para crear tablas externas en Athena
+│
+├── emr/
+│   │
+│   ├── analytics_step.py                # Script de python que usa SparkSQL para realizar un análisis a los datos en /trusted
+│   │
+│   └── etl_step.py                      # Script de python encargado de realizar el proceso ETL a los datos en /raw
+│
+├── ingestion/
+│   ├── glue_rds/
+│   │   └── job-rds-to-s3.py             # Job de Glue para extraer datos desde RDS PostgreSQL y almacenarlos en S3
+│   │
+│   └── lambda_api/
+│       └── lambda_function_ingest.py    # Lambda que ingiere datos desde una API pública y los guarda en S3 (capa RAW)
+│
+├── media/                               # Recursos gráficos (imágenes usadas en README, etc.)
+│
+├── run.sh                               # Script ejecutado desde AWS Cloudshell para orquestar el pipeline completo.
+│
+└── README.md                            # Documentación general del proyecto: arquitectura, pasos de ejecución y explicación del pipeline
+```
+
+
 # Tecnologías Utilizadas
 
 El proyecto se desarrolló utilizando diversos servicios de AWS, entre los cuales destacan Lambda, Glue, RDS, EMR, S3, Athena y API Gateway. También se utilizó Spark como motor de procesamiento distribuido, Python para la implementación de los scripts y Bash para la automatización de la infraestructura.
