@@ -1,7 +1,9 @@
 # Entrega 3 - Sistemas Distribuidos
 # Integrantes: 
 Juan José Vasquez Gómez
+
 Santiago Álvarez Peña
+
 Sebastián Giraldo Álvarez
 ## Automatización del proceso de captura, ingesta, procesamiento y generación de datos para el análisis de Covid-19 en Colombia  
 ### ST0263 – Tópicos Especiales en Telemática — Universidad EAFIT
