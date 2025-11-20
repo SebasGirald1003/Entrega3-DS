@@ -109,6 +109,18 @@ Entrega3-DS/
 └── README.md                            # Documentación general del proyecto: arquitectura, pasos de ejecución y explicación del pipeline
 ```
 
+# Ejecución
+
+El sistema puede ejecutarse desde una sola terminal en AWS Cloudshell mediante:
+
+```bash
+chmod +x run.sh
+./run.sh
+```
+
+Esto activa un flujo completo que simula un ciclo real de ingesta, procesamiento y visualización de datos en una arquitectura batch moderna. Esta automatización demuestra la madurez y cohesión del proyecto final.
+
+> Claramente todos los componentes creados anteriormente deben existir y estar bien referenciados para que todo funcione de manera correcta.
 
 # Tecnologías Utilizadas
 
