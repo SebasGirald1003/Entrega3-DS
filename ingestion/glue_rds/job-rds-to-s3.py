@@ -10,12 +10,9 @@ sc = SparkContext()
 glueContext = GlueContext(sc)
 spark = glueContext.spark_session
 
-# Fecha dinámica para particionar en S3
-today = datetime.date.today().strftime("%Y-%m-%d")
-
 # Nombre del bucket
 bucket = "s3-proyecto3-sd"
-base_path = f"s3://{bucket}/raw/rds/{today}/"
+base_path = f"s3://{bucket}/raw/rds/"
 
 # Nombre de la conexión creada en Glue
 connection_name = "Postgresql-connection-proyecto3"
