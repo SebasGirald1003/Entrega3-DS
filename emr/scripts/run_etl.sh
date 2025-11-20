@@ -1,60 +1,40 @@
 #!/bin/bash
 
-# ========= CONFIGURACIÓN =========
-REGION="us-east-1"
+echo "===== INICIANDO CREACIÓN DE EMR AUTOMATIZADO (ETL) ====="
+
+# VARIABLES IMPORTANTES
 BUCKET="s3-proyecto3-sd"
-ETL_SCRIPT="s3://s3-proyecto3-sd/scripts/etl/etl_step.py"
+REGION="us-east-1"
+LOGS_PATH="s3://s3-proyecto3-sd/emr/logs/"
+SCRIPT_PATH="s3://s3-proyecto3-sd/scripts/etl/etl_step.py"
 
-# ========= 1. CREAR CLÚSTER EMR =========
-echo "Creando cluster EMR..."
-
+# 1. CREAR CLÚSTER EMR CON AUTO-TERMINATE Y CON EL STEP ETL
 CLUSTER_ID=$(aws emr create-cluster \
-    --name "Cluster-ETL" \
-    --release-label emr-7.3.0 \
+    --name "EMR-COVID-ETL" \
+    --release-label emr-7.1.0 \
     --applications Name=Hadoop Name=Spark \
-    --ec2-attributes InstanceProfile=EMR_EC2_DefaultRole \
-    --instance-type m4.xlarge \
-    --instance-count 3 \
     --use-default-roles \
+    --instance-type m5.xlarge \
+    --instance-count 2 \
     --region $REGION \
-    --log-uri s3://$BUCKET/logs/ \
-    --query 'ClusterId' \
-    --output text)
+    --log-uri $LOGS_PATH \
+    --auto-terminate \
+    --steps Type=Spark,Name="ETL-Step",ActionOnFailure=CONTINUE,Args=["spark-submit","--deploy-mode","client","--master","yarn","$SCRIPT_PATH"] \
+    --query "ClusterId" --output text
+)
 
 echo "Cluster creado con ID: $CLUSTER_ID"
-echo "Esperando a que esté en estado WAITING..."
+echo "Esperando inicio del cluster..."
 
 aws emr wait cluster-running --cluster-id $CLUSTER_ID
 
-echo "Cluster listo."
-
-# ========= 2. AÑADIR STEP DEL ETL =========
-echo "Añadiendo Step del ETL..."
-
-STEP_ID=$(aws emr add-steps \
-    --cluster-id $CLUSTER_ID \
-    --steps Type=CUSTOM_JAR,\
-Name=ETLJob,\
-ActionOnFailure=CONTINUE,\
-Jar=command-runner.jar,\
-Args=["spark-submit","--deploy-mode","client","--master","yarn","'$ETL_SCRIPT'"] \
-    --region $REGION \
-    --query 'StepIds[0]' \
-    --output text)
-
-echo "Step creado con ID: $STEP_ID"
-echo "Esperando a que el Step termine..."
+echo "Cluster en ejecución. Esperando finalización del step ETL..."
 
 aws emr wait step-complete \
     --cluster-id $CLUSTER_ID \
-    --step-id $STEP_ID
+    --step-id $(aws emr list-steps --cluster-id $CLUSTER_ID --query "Steps[0].Id" --output text)
 
-echo "ETL terminado correctamente."
+echo "ETL COMPLETO. El cluster se apagará automáticamente."
 
-# ========= 3. APAGAR EL CLÚSTER =========
-echo "Apagando cluster..."
+echo "===== PIPELINE ETL FINALIZADO ====="
 
-aws emr terminate-clusters --cluster-id $CLUSTER_ID
-
-echo "Cluster terminado."
-echo "===== PIPELINE ETL COMPLETADO ====="

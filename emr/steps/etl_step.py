@@ -1,6 +1,7 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, trim, upper, to_date, lpad
 from pyspark.sql.types import *
+import datetime
 
 print("==== INICIANDO JOB ETL COVID ====")
 
@@ -117,12 +118,16 @@ df_final = df_step2.join(
 print("Uniones completas. Registros finales:", df_final.count())
 
 # ----------------------------------------------------------------------------
-# 7. GUARDAR EN PARQUET
+# 7. GUARDAR EN CSV
 # ----------------------------------------------------------------------------
 
-output = f"s3://{bucket}/trusted/covid_merged/"
-print("Escribiendo datos en formato Parquet...")
+date = datetime.date.today().strftime("%Y-%m-%d")
 
-df_final.write.mode("overwrite").parquet(output)
+output = f"s3://{bucket}/trusted/covid_merged/{date}/"
+print("Escribiendo datos en formato CSV...")
 
-print("==== JOB ETL FINALIZADO EXITOSAMENTE ====")
+df_final.coalesce(1) \
+    .write \
+    .mode("overwrite") \
+    .option("header", "true") \
+    .csv(output)
