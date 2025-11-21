@@ -8,7 +8,7 @@ Sebastián Giraldo Álvarez
 ## Automatización del proceso de captura, ingesta, procesamiento y generación de datos para el análisis de Covid-19 en Colombia  
 ### ST0263 – Tópicos Especiales en Telemática — Universidad EAFIT
 
-## Video Sustentación: 
+## Video Sustentación: https://drive.google.com/file/d/12c6woxu0SEEAZa9FXV4qtf03PEh3a73g/view?usp=sharing
 
 ## Introducción
 
